@@ -16,7 +16,12 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         // 3 = Common STD
         // 4 = HIV + Common STD
         euint8 medicalData;
+        // 0 is all uninitialized
+        euint8 criminalRecord;
+        euint8 fertilityMeasure;
+        euint8 marriageStatus;
         euint32 lastExamineDate;
+        euint8 rating;
     }
     euint32 internal _zero32 = FHE.asEuint32(0);
     euint8 internal _zero8 = FHE.asEuint8(0);
@@ -124,6 +129,11 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         _identitylist[to].dateOfBirth = _zero32;
         _identitylist[to].lastExamineDate = _zero32;
         _identitylist[to].medicalData = _zero8;
+        _identitylist[to].criminalRecord = _zero8;
+        _identitylist[to].fertilityMeasure = _zero8;
+        _identitylist[to].marriageStatus = _zero8;
+        // user app rating
+        _identitylist[to].rating = _zero8;
         tokenIDCount += 1;
     }
 
