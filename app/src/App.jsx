@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import './App.css'
 import './styles.css';
 import logo from '../public/logo.png'
@@ -11,7 +11,15 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Divider from '@mui/material/Divider';
+import Switch from '@mui/material/Switch';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import Diversity3Icon from '@mui/icons-material/Diversity3';
+import GavelIcon from '@mui/icons-material/Gavel';
+import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
+import PregnantWomanIcon from '@mui/icons-material/PregnantWoman';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 const theme = createTheme({
   palette: {
@@ -21,16 +29,47 @@ const theme = createTheme({
       dark: '#190478',
       contrastText: '#fff',
     },
-    // secondary: {
-    //   light: '#ff7961',
-    //   main: '#f44336',
-    //   dark: '#ba000d',
-    //   contrastText: '#000',
-    // },
+    secondary: {
+      // light: '#ff7961',
+      main: '#fff',
+      // dark: '#ba000d',
+      // contrastText: '#000',
+    },
+  },
+  typography: {
+    fontFamily: [
+      'Quicksand', // Use Quicksand font for this style
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
   },
 });
 
 function App() {
+  const [displayStates, setDisplayStates] = useState({
+    displayV: true,
+    displayM: true,
+    displayC: true,
+    displayS: true,
+    displayF: true,
+  });
+
+  const handleChange = (event) => {
+    const { name, checked } = event.target;
+    setDisplayStates(prevStates => ({
+      ...prevStates,
+      [name]: checked,
+    }));
+  };
+
   return (
     <div className="body quicksand-400">
       <ThemeProvider theme={theme}>
@@ -59,42 +98,117 @@ function App() {
                 <img src={profilePhoto} alt="Profile picture" className="profile-picture" />
               </div>
               <div className="flex items-center">
-                <span className="username">ETHAN</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="icon text-blue-500 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" className="icon text-green-500 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+                <h2 className="username">Ethan</h2>
+                {displayStates.displayV && <VerifiedIcon fontSize="large" className="badge-light" />}
+                {displayStates.displayM && <Diversity3Icon fontSize="large" className="badge-light" />}
+                {displayStates.displayC && <GavelIcon fontSize="large" className="badge-light" />}
+                {displayStates.displayS && <MedicalInformationIcon fontSize="large" className="badge-light" />}
+                {displayStates.displayF && <PregnantWomanIcon fontSize="large" className="badge-light" />}
+
               </div>
               <div className="settings-container">
                 <h3>Verification Settings</h3>
                 <Divider />
                 <div className="section">
-                  <h3>Marriage Status</h3>
+                  <div className="pos-abs">
+                    <VerifiedIcon fontSize="large" className="badge-dark" />
+                    <Switch
+                      className="switch"
+                      size="large"
+                      name="displayV"
+                      checked={displayStates.displayV}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <h3 className="h3-category">Identity Verification </h3>
+                  <p>Strengthen the trustworthiness of profiles through verified personal identification.</p>
+                  <div className="verify-button">
+                    <Button variant="contained" endIcon={<ArrowForwardIcon />}>
+                      Verify
+                    </Button>
+                  </div>
+               </div>
+                <Divider />
+                <div className="section">
+                  <div className="pos-abs">
+                    <Diversity3Icon fontSize="large" className="badge-dark" />
+                    <Switch
+                      className="switch"
+                      size="large"
+                      name="displayM"
+                      checked={displayStates.displayM}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <h3 className="h3-category">Marriage Status</h3>
                   <p>Verify your marital status to enhance trust with potential matches.</p>
+                  <div className="verify-button">
+                    <Button variant="outlined" endIcon={<CheckCircleOutlineIcon />}>
+                      Verified
+                    </Button>
+                  </div>
                 </div>
                 <Divider />
                 <div className="section">
-                  <h3>Criminal Records</h3>
+                  <div className="pos-abs">
+                    <GavelIcon fontSize="large" className="badge-dark" />
+                    <Switch
+                      className="switch"
+                      size="large"
+                      name="displayC"
+                      checked={displayStates.displayC}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <h3 className="h3-category">Criminal Records</h3>
                   <p>Confirm a clean legal background to maintain a safe community.</p>
+                  <div className="verify-button">
+                    <Button variant="contained" endIcon={<ArrowForwardIcon />}>
+                      Verify
+                    </Button>
+                  </div>
                 </div>
                 <Divider />
                 <div className="section">
-                  <h3>STD</h3>
+                  <div className="pos-abs">
+                    <MedicalInformationIcon fontSize="large" className="badge-dark" />
+                    <Switch
+                      className="switch"
+                      size="large"
+                      name="displayS"
+                      checked={displayStates.displayS}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <h3 className="h3-category">STD</h3>
                   <p>Share health status discreetly to ensure mutual safety and transparency.</p>
+                  <div className="verify-button">
+                    <Button variant="contained" endIcon={<ArrowForwardIcon />}>
+                      Verify
+                    </Button>
+                  </div>
                 </div>
                 <Divider />
                 <div className="section">
-                  <h3>Fertility Measure</h3>
+                  <div className="pos-abs">
+                    <PregnantWomanIcon fontSize="large" className="badge-dark" />
+                    <Switch
+                      className="switch"
+                      size="large"
+                      name="displayF"
+                      checked={displayStates.displayF}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <h3 className="h3-category">Fertility Measure</h3>
                   <p>Optional fertility information for those considering future family planning.</p>
+                  <div className="verify-button">
+                    <Button variant="contained" endIcon={<ArrowForwardIcon />}>
+                      Verify
+                    </Button>
+                  </div>
                 </div>
                 <Divider />
-                <div className="section">
-                  <h3>Hidden Rating System</h3>
-                  <p>Contribute to the community's integrity by rating interactions anonymously.</p>
-                </div>
-
               </div>
             </div>
           </>

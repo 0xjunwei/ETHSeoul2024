@@ -37,9 +37,8 @@
 
 .username {
   color: #fff;
-  font-size: 1.25rem;
-  font-weight: bold;
-  padding-left: 14px;
+  margin: 0;
+  padding: 0.5rem;
 }
 
 .icon {
@@ -52,13 +51,63 @@
   background-color: #fff;
 }
 
+.badge-container {
+  width: 50%;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
 
 .settings-container {
   text-align: left;
   width: 80%;
   margin: auto;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   background: white;
   padding: 20px;
   border-radius: 8px;
+}
+
+.badge-light {
+  color: rgb(255, 255, 255);
+  padding: 0 0.6rem;
+}
+
+.badge-dark {
+  color:rgb(0, 0, 0)
+}
+
+.section {
+  position: relative;
+}
+
+.pos-abs {
+  position: absolute;
+}
+
+.switch {
+  top: -0.8rem;
+  left: 13rem;
+}
+
+.verify-button {
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.h3-category {
+  padding: 0.1rem 0 0 3rem;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .verify-button {
+    position: absolute;
+    right: 5%;
+    top: 2rem;
+    }
 }
