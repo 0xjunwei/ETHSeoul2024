@@ -1,2 +1,2 @@
 # ETHSeoul2024
-EthSeoul 3
+EthSeoul 2024
