@@ -35,6 +35,11 @@ contract SoulBound is ERC721, Permissioned, Ownable {
 
     constructor() ERC721("PersonalIdentity", "PII") Ownable(msg.sender) {}
 
+    modifier onlyAdmin() {
+        require(_admin[msg.sender], "Caller is not an admin");
+        _; // Continue executing the rest of the modified function
+    }
+
     function addUserDOBDetails(
         address _user,
         inEuint32 memory _dateOfBirth
@@ -43,7 +48,7 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         require(balanceOfUser == 1, "User has not minted a token!");
         euint32 encryptedDOB = FHE.asEuint32(_dateOfBirth);
         // Checks to see if DOB is not set already, else please burn NFT
-        FHE.req(_identitylist[_user].dateOfBirth.eq(_zero32));
+        FHE.req(FHE.eq(_identitylist[_user].dateOfBirth, _zero32));
         _identitylist[_user].dateOfBirth = encryptedDOB;
     }
 
@@ -51,13 +56,53 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         address _user,
         inEuint8 memory _medicalInfo,
         inEuint32 memory _lastExamineDate
-    ) public onlyOwner {
+    ) public onlyAdmin {
         uint256 balanceOfUser = balanceOf(_user);
         require(balanceOfUser == 1, "User has not minted a token!");
         euint8 encryptedMedicalData = FHE.asEuint8(_medicalInfo);
         _identitylist[_user].medicalData = encryptedMedicalData;
         euint32 encryptedLastExamineDate = FHE.asEuint32(_lastExamineDate);
         _identitylist[_user].lastExamineDate = encryptedLastExamineDate;
+    }
+
+    function addCriminalRecord(
+        address _user,
+        inEuint8 memory __criminalRecord
+    ) public onlyOwner {
+        uint256 balanceOfUser = balanceOf(_user);
+        require(balanceOfUser == 1, "User has not minted a token!");
+        euint8 encryptedCriminalData = FHE.asEuint8(__criminalRecord);
+        _identitylist[_user].criminalRecord = encryptedCriminalData;
+    }
+
+    function addFertilityCount(
+        address _user,
+        inEuint8 memory __fertilityCount
+    ) public onlyOwner {
+        uint256 balanceOfUser = balanceOf(_user);
+        require(balanceOfUser == 1, "User has not minted a token!");
+        euint8 encryptedFertilityCount = FHE.asEuint8(__fertilityCount);
+        _identitylist[_user].fertilityMeasure = encryptedFertilityCount;
+    }
+
+    function addMarriageStatus(
+        address _user,
+        inEuint8 memory __marriageStatus
+    ) public onlyOwner {
+        uint256 balanceOfUser = balanceOf(_user);
+        require(balanceOfUser == 1, "User has not minted a token!");
+        euint8 encryptedMarriageStatus = FHE.asEuint8(__marriageStatus);
+        _identitylist[_user].marriageStatus = encryptedMarriageStatus;
+    }
+
+    function addRating(
+        address _user,
+        inEuint8 memory __rating
+    ) public onlyOwner {
+        uint256 balanceOfUser = balanceOf(_user);
+        require(balanceOfUser == 1, "User has not minted a token!");
+        euint8 encryptedRating = FHE.asEuint8(__rating);
+        _identitylist[_user].rating = encryptedRating;
     }
 
     function addAdmin(address _adminAddress) public onlyOwner {

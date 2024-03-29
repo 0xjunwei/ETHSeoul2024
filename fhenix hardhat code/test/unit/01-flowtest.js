@@ -6,14 +6,12 @@ describe("SoulBound", async function () {
   let deployer;
   let admin;
   let client;
-
+  const client_fhenix = new FhenixClient({ provider: ethers.provider });
   beforeEach(async function () {
     // deploy Proofers
     // using hardhat-deploy
     // get accounts from ethers
     console.log("Testing deploy of soulbound script");
-    //const accounts = await ethers.getSigners();
-    //deployer = accounts[0];
     deployer = await getNamedAccounts();
     admin = (await ethers.getSigners())[1];
     client = (await ethers.getSigners())[2];
@@ -35,6 +33,18 @@ describe("SoulBound", async function () {
       await receipt.wait();
 
       await expect(soulContract.mint(client.getAddress(), 0)).to.be.reverted;
+    });
+  });
+
+  // check Date Of Birth adding
+  // checks if adding of DOB is accurate
+  describe("adding Individual DOB", async function () {
+    it("Should be succeed at adding DOB as owner of contract", async function () {
+      const eDOB = await client_fhenix.encrypt(
+        638656385,
+        EncryptionTypes.uint32
+      );
+      await expect(soulContract.addUserDOBDetails(client.getAddress(), eDOB));
     });
   });
 });

@@ -12,6 +12,8 @@ const { ethers, deployments } = hre;
 module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();
+  let admin = (await ethers.getSigners())[1];
+  let clientAcc = (await ethers.getSigners())[2];
   const chainId = network.config.chainId;
   // Initialize FhenixClient
   const client = new FhenixClient({ provider: ethers.provider });
@@ -46,23 +48,46 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     tester.address
   );
   // Mint first
-  let response0 = await contractInstance.mint(
-    "0x5c6688532A27492DA6C534a37cedE11A86823152",
-    1
-  );
+  let response0 = await contractInstance.mint(clientAcc.getAddress(), 1);
   console.log("Minted NFT");
 
   const eOption = await client.encrypt(638656385, EncryptionTypes.uint32);
   response0 = await contractInstance.addUserDOBDetails(
-    "0x5c6688532A27492DA6C534a37cedE11A86823152",
+    clientAcc.getAddress(),
     eOption
   );
-  console.log("Added into nft");
-  // trying to add again should failed
-  const eOption1 = await client.encrypt(638656385, EncryptionTypes.uint32);
-  response0 = await contractInstance.addUserDOBDetails(
-    "0x5c6688532A27492DA6C534a37cedE11A86823152",
-    eOption1
+  console.log("Added DOB into nft");
+  //adding admin
+  response0 = await contractInstance.addAdmin(admin.getAddress());
+  console.log("added admin");
+  // admin to add medical data
+  const eMedicalData = await client.encrypt(2, EncryptionTypes.uint8);
+  const eLastExamineDate = await client.encrypt(
+    638656385,
+    EncryptionTypes.uint32
   );
-  console.log("Txn Should fail");
+  response0 = await contractInstance
+    .connect(admin)
+    .addMedicalData(clientAcc.getAddress(), eMedicalData, eLastExamineDate);
+
+  console.log("Added medical data");
+  // Let try to pull out the medical data from the sc
+  // client has to grant permission first
+  response0 = await contractInstance
+    .connect(clientAcc)
+    .approveViewingOfData(deployer);
+  console.log("Approved the deployer to view the medical data");
+  // Getting the permit
+  // trying to get a permit and pull out details for privacy as the decryption of data will only happen on frontend not through the SC
+  // this ensure only the requester gets the data
+  const permit = await getPermit(tester.address, ethers.provider);
+  client.storePermit(permit);
+  const permission = client.extractPermitPermission(permit);
+  response0 = await contractInstance.retrieveMedicalData(
+    clientAcc.address,
+    permission
+  );
+  const plaintext = client.unseal(tester.address, response0);
+  // Inserted 2 above, should get back 2
+  console.log("plaintext return: " + plaintext.toString());
 };
