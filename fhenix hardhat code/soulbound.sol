@@ -9,17 +9,24 @@ import "@fhenixprotocol/contracts/access/Permissioned.sol";
 contract SoulBound is ERC721, Permissioned, Ownable {
     struct IdentityDetails {
         euint32 dateOfBirth;
+        // To save on storage cost (255 possible combinations)
         // init 0 = not checked yet
         // 1 = clean
         // 2 = HIV positive
+        // 3 = Common STD
+        // 4 = HIV + Common STD
         euint8 medicalData;
+        euint32 lastExamineDate;
     }
     euint32 internal _zero32 = FHE.asEuint32(0);
     euint8 internal _zero8 = FHE.asEuint8(0);
     uint256 tokenIDCount = 0;
     mapping(address => IdentityDetails) public _identitylist;
+    // Docters must be approved before they can add patient medical data into the patients record
     mapping(address => bool) internal _admin;
-    mapping(address => address) internal _approvedViewers;
+    // Similar to nft approval, even if nft is burnt and reminted the current approval will stick, please revoke after
+    mapping(address => mapping(address dappAddress => bool))
+        internal _approvedViewers;
 
     constructor() ERC721("PersonalIdentity", "PII") Ownable(msg.sender) {}
 
@@ -37,12 +44,15 @@ contract SoulBound is ERC721, Permissioned, Ownable {
 
     function addMedicalData(
         address _user,
-        inEuint8 memory _medicalInfo
+        inEuint8 memory _medicalInfo,
+        inEuint32 memory _lastExamineDate
     ) public onlyOwner {
         uint256 balanceOfUser = balanceOf(_user);
         require(balanceOfUser == 1, "User has not minted a token!");
         euint8 encryptedMedicalData = FHE.asEuint8(_medicalInfo);
         _identitylist[_user].medicalData = encryptedMedicalData;
+        euint32 encryptedLastExamineDate = FHE.asEuint32(_lastExamineDate);
+        _identitylist[_user].lastExamineDate = encryptedLastExamineDate;
     }
 
     function addAdmin(address _adminAddress) public onlyOwner {
@@ -53,16 +63,52 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         _admin[_addressToRemove] = false;
     }
 
-    // retrieve medical data from onlyAdmin
+    // retrieve medical data for Dapps
     function retrieveMedicalData(
         address _patientData,
         Permission memory perm
     ) public view onlySender(perm) returns (bytes memory) {
+        // add require to prevent data from being seen
+        require(
+            _approvedViewers[_patientData][msg.sender] == true,
+            "no permission granted to view data"
+        );
         return
             FHE.sealoutput(
                 _identitylist[_patientData].medicalData,
                 perm.publicKey
             );
+    }
+
+    function retrieveLastKnownMedicalData(
+        address _patientData,
+        Permission memory perm
+    ) public view onlySender(perm) returns (bytes memory) {
+        // add require to prevent data from being seen
+        require(
+            _approvedViewers[_patientData][msg.sender] == true,
+            "no permission granted to view data"
+        );
+        return
+            FHE.sealoutput(
+                _identitylist[_patientData].lastExamineDate,
+                perm.publicKey
+            );
+    }
+
+    // view functions
+    function approveViewingOfData(address _dappAddress) public {
+        // user must have a token first
+        uint256 balanceOfUser = balanceOf(msg.sender);
+        require(balanceOfUser == 1, "User has not minted a token!");
+        _approvedViewers[msg.sender][_dappAddress] = true;
+    }
+
+    function revokeViewingOfData(address _dappAddress) public {
+        // user must have a token first
+        uint256 balanceOfUser = balanceOf(msg.sender);
+        require(balanceOfUser == 1, "User has not minted a token!");
+        _approvedViewers[msg.sender][_dappAddress] = false;
     }
 
     // Custom mint function only callable by the owner
@@ -76,6 +122,7 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         _safeMint(to, tokenIDCount);
         // initialize the structs
         _identitylist[to].dateOfBirth = _zero32;
+        _identitylist[to].lastExamineDate = _zero32;
         _identitylist[to].medicalData = _zero8;
         tokenIDCount += 1;
     }
@@ -89,6 +136,7 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         _burn(tokenId);
         // Then, remove the entry from _identitylist
         delete _identitylist[ownerAddress];
+        // Similar to nft approval, even if nft is burnt and reminted the current approval for dapp will stick, please revoke before reminting
     }
 
     // Override transfer functions to prevent all transfers
