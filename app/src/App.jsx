@@ -54,6 +54,7 @@ const theme = createTheme({
 });
 
 function App() {
+
   const [displayStates, setDisplayStates] = useState({
     displayV: true,
     displayM: true,
@@ -62,6 +63,17 @@ function App() {
     displayF: true,
   });
 
+  const [modalOpen, setModalOpen] = useState('settings');
+
+  const handleOpenModal = (modal) => {
+    setModalOpen(modal);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen('settings');
+  };
+
+
   const handleChange = (event) => {
     const { name, checked } = event.target;
     setDisplayStates(prevStates => ({
@@ -69,6 +81,7 @@ function App() {
       [name]: checked,
     }));
   };
+
 
   return (
     <div className="body quicksand-400">
@@ -106,110 +119,137 @@ function App() {
                 {displayStates.displayF && <PregnantWomanIcon fontSize="large" className="badge-light" />}
 
               </div>
+              {modalOpen=='i' &&
               <div className="settings-container">
-                <h3>Verification Settings</h3>
-                <Divider />
-                <div className="section">
-                  <div className="pos-abs">
-                    <VerifiedIcon fontSize="large" className="badge-dark" />
-                    <Switch
-                      className="switch"
-                      size="large"
-                      name="displayV"
-                      checked={displayStates.displayV}
-                      onChange={handleChange}
-                    />
+                <h3>Verify Your Identity</h3>
+                  <Button onClick={handleCloseModal}>Close</Button>
+              </div>}
+              {modalOpen == 'm' &&
+                <div className="settings-container">
+                  <h3>Verify Your Marriage Status</h3>
+                  <Button onClick={handleCloseModal}>Close</Button>
+                </div>}
+              {modalOpen == 'c' &&
+                <div className="settings-container">
+                  <h3>Verify Your Criminal Records</h3>
+                  <Button onClick={handleCloseModal}>Close</Button>
+                </div>}
+              {modalOpen == 's' &&
+                <div className="settings-container">
+                  <h3>Verify Your STD Status</h3>
+                  <Button onClick={handleCloseModal}>Close</Button>
+                </div>}
+              {modalOpen == 'f' &&
+                <div className="settings-container">
+                  <h3>Verify Your Fertility Measure</h3>
+                  <Button onClick={handleCloseModal}>Close</Button>
+                </div>}
+              {modalOpen=='settings' &&
+                <div className="settings-container">
+                  <h3>Verification Settings</h3>
+                  <Divider />
+                  <div className="section">
+                    <div className="pos-abs">
+                      <VerifiedIcon fontSize="large" className="badge-dark" />
+                      <Switch
+                        className="switch"
+                        size="large"
+                        name="displayV"
+                        checked={displayStates.displayV}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <h3 className="h3-category">Identity Verification </h3>
+                    <p>Strengthen the trustworthiness of profiles through verified personal identification.</p>
+                    <div className="verify-button">
+                      <Button variant="contained" endIcon={<ArrowForwardIcon />} onClick={() => handleOpenModal('i')}>
+                        Verify
+                      </Button>
+                    </div>
                   </div>
-                  <h3 className="h3-category">Identity Verification </h3>
-                  <p>Strengthen the trustworthiness of profiles through verified personal identification.</p>
-                  <div className="verify-button">
-                    <Button variant="contained" endIcon={<ArrowForwardIcon />}>
-                      Verify
-                    </Button>
+                  <Divider />
+                  <div className="section">
+                    <div className="pos-abs">
+                      <Diversity3Icon fontSize="large" className="badge-dark" />
+                      <Switch
+                        className="switch"
+                        size="large"
+                        name="displayM"
+                        checked={displayStates.displayM}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <h3 className="h3-category">Marriage Status</h3>
+                    <p>Verify your marital status to enhance trust with potential matches.</p>
+                    <div className="verify-button">
+                      <Button variant="outlined" endIcon={<ArrowForwardIcon />} onClick={() => handleOpenModal('m')}>
+                        Verified
+                      </Button>
+                    </div>
                   </div>
-               </div>
-                <Divider />
-                <div className="section">
-                  <div className="pos-abs">
-                    <Diversity3Icon fontSize="large" className="badge-dark" />
-                    <Switch
-                      className="switch"
-                      size="large"
-                      name="displayM"
-                      checked={displayStates.displayM}
-                      onChange={handleChange}
-                    />
+                  <Divider />
+                  <div className="section">
+                    <div className="pos-abs">
+                      <GavelIcon fontSize="large" className="badge-dark" />
+                      <Switch
+                        className="switch"
+                        size="large"
+                        name="displayC"
+                        checked={displayStates.displayC}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <h3 className="h3-category">Criminal Records</h3>
+                    <p>Confirm a clean legal background to maintain a safe community.</p>
+                    <div className="verify-button">
+                      <Button variant="contained" endIcon={<ArrowForwardIcon />} onClick={() => handleOpenModal('c')}>
+                        Verify
+                      </Button>
+                    </div>
                   </div>
-                  <h3 className="h3-category">Marriage Status</h3>
-                  <p>Verify your marital status to enhance trust with potential matches.</p>
-                  <div className="verify-button">
-                    <Button variant="outlined" endIcon={<CheckCircleOutlineIcon />}>
-                      Verified
-                    </Button>
+                  <Divider />
+                  <div className="section">
+                    <div className="pos-abs">
+                      <MedicalInformationIcon fontSize="large" className="badge-dark" />
+                      <Switch
+                        className="switch"
+                        size="large"
+                        name="displayS"
+                        checked={displayStates.displayS}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <h3 className="h3-category">STD</h3>
+                    <p>Share health status discreetly to ensure mutual safety and transparency.</p>
+                    <div className="verify-button">
+                      <Button variant="contained" endIcon={<ArrowForwardIcon />} onClick={() => handleOpenModal('s')}>
+                        Verify
+                      </Button>
+                    </div>
                   </div>
+                  <Divider />
+                  <div className="section">
+                    <div className="pos-abs">
+                      <PregnantWomanIcon fontSize="large" className="badge-dark" />
+                      <Switch
+                        className="switch"
+                        size="large"
+                        name="displayF"
+                        checked={displayStates.displayF}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <h3 className="h3-category">Fertility Measure</h3>
+                    <p>Optional fertility information for those considering future family planning.</p>
+                    <div className="verify-button">
+                      <Button variant="contained" endIcon={<ArrowForwardIcon />} onClick={() => handleOpenModal('f')}>
+                        Verify
+                      </Button>
+                    </div>
+                  </div>
+                  <Divider />
                 </div>
-                <Divider />
-                <div className="section">
-                  <div className="pos-abs">
-                    <GavelIcon fontSize="large" className="badge-dark" />
-                    <Switch
-                      className="switch"
-                      size="large"
-                      name="displayC"
-                      checked={displayStates.displayC}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <h3 className="h3-category">Criminal Records</h3>
-                  <p>Confirm a clean legal background to maintain a safe community.</p>
-                  <div className="verify-button">
-                    <Button variant="contained" endIcon={<ArrowForwardIcon />}>
-                      Verify
-                    </Button>
-                  </div>
-                </div>
-                <Divider />
-                <div className="section">
-                  <div className="pos-abs">
-                    <MedicalInformationIcon fontSize="large" className="badge-dark" />
-                    <Switch
-                      className="switch"
-                      size="large"
-                      name="displayS"
-                      checked={displayStates.displayS}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <h3 className="h3-category">STD</h3>
-                  <p>Share health status discreetly to ensure mutual safety and transparency.</p>
-                  <div className="verify-button">
-                    <Button variant="contained" endIcon={<ArrowForwardIcon />}>
-                      Verify
-                    </Button>
-                  </div>
-                </div>
-                <Divider />
-                <div className="section">
-                  <div className="pos-abs">
-                    <PregnantWomanIcon fontSize="large" className="badge-dark" />
-                    <Switch
-                      className="switch"
-                      size="large"
-                      name="displayF"
-                      checked={displayStates.displayF}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <h3 className="h3-category">Fertility Measure</h3>
-                  <p>Optional fertility information for those considering future family planning.</p>
-                  <div className="verify-button">
-                    <Button variant="contained" endIcon={<ArrowForwardIcon />}>
-                      Verify
-                    </Button>
-                  </div>
-                </div>
-                <Divider />
-              </div>
+              }
             </div>
           </>
         </Box>
