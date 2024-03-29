@@ -28,9 +28,13 @@ describe("SoulBound", async function () {
     });
   });
   // checks tries to mint again should not work
-  describe("mint to an address again", async function () {
-    it("Should be succeed at initial mint", async function () {
-      await expect(soulContract.mint(client.getAddress(), 0));
+  describe("mint a second time", function () {
+    it("Fails if user possess a token already", async function () {
+      // Await the completion of the first mint operation.
+      const receipt = await soulContract.mint(client.getAddress(), 0);
+      await receipt.wait();
+
+      await expect(soulContract.mint(client.getAddress(), 0)).to.be.reverted;
     });
   });
 });

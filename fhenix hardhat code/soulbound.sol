@@ -20,8 +20,8 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         euint8 criminalRecord;
         euint8 fertilityMeasure;
         euint8 marriageStatus;
-        euint32 lastExamineDate;
         euint8 rating;
+        euint32 lastExamineDate;
     }
     euint32 internal _zero32 = FHE.asEuint32(0);
     euint8 internal _zero8 = FHE.asEuint8(0);
@@ -83,6 +83,67 @@ contract SoulBound is ERC721, Permissioned, Ownable {
                 _identitylist[_patientData].medicalData,
                 perm.publicKey
             );
+    }
+
+    function retrieveCriminalRecord(
+        address _patientData,
+        Permission memory perm
+    ) public view onlySender(perm) returns (bytes memory) {
+        // add require to prevent data from being seen
+        require(
+            _approvedViewers[_patientData][msg.sender] == true,
+            "no permission granted to view data"
+        );
+        return
+            FHE.sealoutput(
+                _identitylist[_patientData].criminalRecord,
+                perm.publicKey
+            );
+    }
+
+    function retrieveFertilityMeasure(
+        address _patientData,
+        Permission memory perm
+    ) public view onlySender(perm) returns (bytes memory) {
+        // add require to prevent data from being seen
+        require(
+            _approvedViewers[_patientData][msg.sender] == true,
+            "no permission granted to view data"
+        );
+        return
+            FHE.sealoutput(
+                _identitylist[_patientData].fertilityMeasure,
+                perm.publicKey
+            );
+    }
+
+    function retrieveMarriageStatus(
+        address _patientData,
+        Permission memory perm
+    ) public view onlySender(perm) returns (bytes memory) {
+        // add require to prevent data from being seen
+        require(
+            _approvedViewers[_patientData][msg.sender] == true,
+            "no permission granted to view data"
+        );
+        return
+            FHE.sealoutput(
+                _identitylist[_patientData].marriageStatus,
+                perm.publicKey
+            );
+    }
+
+    function retrieveRating(
+        address _patientData,
+        Permission memory perm
+    ) public view onlySender(perm) returns (bytes memory) {
+        // add require to prevent data from being seen
+        require(
+            _approvedViewers[_patientData][msg.sender] == true,
+            "no permission granted to view data"
+        );
+        return
+            FHE.sealoutput(_identitylist[_patientData].rating, perm.publicKey);
     }
 
     function retrieveLastKnownMedicalData(
