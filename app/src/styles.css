@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  padding-top: 2rem;
 }
 
 .profile-container {
@@ -12,18 +13,19 @@
   height: 8rem;
   border-radius: 50%;
   overflow: hidden;
-  border-width: 4px;
-  border-color: #F472B6;
+  border-width: 5px;
+  border-color: #e7c9dc;
   border-style: solid;
   margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
 }
 
 .profile-inner-border {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border-width: 4px;
-  border-color: #fff;
+  border-width: 5px;
+  border-color: #ffffff;
   border-style: solid;
 }
 
@@ -34,7 +36,7 @@
 }
 
 .username {
-  color: #000;
+  color: #fff;
   font-size: 1.25rem;
   font-weight: bold;
   padding-left: 14px;
@@ -44,4 +46,19 @@
   height: 1.5rem;
   width: 1.5rem;
   stroke-width: 2;
+}
+
+.top-navigation {
+  background-color: #fff;
+}
+
+
+.settings-container {
+  text-align: left;
+  width: 80%;
+  margin: auto;
+  margin-top: 2rem;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
 }
