@@ -7,7 +7,7 @@ const { FhenixClient, EncryptionTypes, getPermit } = require("fhenixjs");
 
 async function main() {
   // Modify accordingly to match current deployment address
-  const contractAddress = "0x0cC63D06fB5882e8dE85FA259010414d0461B6f4";
+  const contractAddress = "0x18eA26A3941AAfb022a48a6201B2B2bd53aFAF59";
 
   const contractArtifact = await hre.artifacts.readArtifact("SoulBound");
 
