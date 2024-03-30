@@ -1,5 +1,5 @@
 Project is based on Track submission for ETHSeoul 2024 under FHENIX track
-Contract deployed: https://explorer.testnet.fhenix.zone/address/0x0cC63D06fB5882e8dE85FA259010414d0461B6f4
+Contract deployed: https://explorer.testnet.fhenix.zone/address/0x18eA26A3941AAfb022a48a6201B2B2bd53aFAF59
 
 We are creating a Dating app that enables user to identify individuals with STD based on medical data that is encrypted using Fully Homomorphic Encryption (FHE) on chain.
 
@@ -16,3 +16,11 @@ Types of Data onchain that is encrypted using FHE:
 
 Medical data can only be provided by approved Admins (Doctors/institutions)
 Viewing of user data would require the user to grant approval to a wallet to call for viewing of their data, else view function would revert (Similar to Allowance concept but for view)
+
+
+Deployment Script:
+![image](https://github.com/0xjunwei/ETHSeoul2024/assets/53926665/17391e5a-b4ec-47ed-a0d5-2865783ce6c5)
+Test script:
+![image](https://github.com/0xjunwei/ETHSeoul2024/assets/53926665/2c2fcbfe-24b5-47e0-8325-d4b84596c6b2)
+
+
