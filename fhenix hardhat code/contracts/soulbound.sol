@@ -241,7 +241,9 @@ contract SoulBound is ERC721, Permissioned, Ownable {
             balanceOfUser < 1,
             "Token already minted for this user, please burn before minting again!"
         );
+
         _safeMint(to, tokenIDCount);
+        tokenIDCount += 1;
         // initialize the structs
         _identitylist[to].dateOfBirth = _zero32;
         _identitylist[to].lastExamineDate = _zero32;
@@ -251,7 +253,6 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         _identitylist[to].marriageStatus = _zero8;
         // user app rating
         _identitylist[to].rating = _zero8;
-        tokenIDCount += 1;
     }
 
     // Modified burn function

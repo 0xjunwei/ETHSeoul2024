@@ -69,8 +69,36 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   response0 = await contractInstance
     .connect(admin)
     .addMedicalData(clientAcc.getAddress(), eMedicalData, eLastExamineDate);
+  console.log("Added Medical data");
 
-  console.log("Added medical data");
+  // admin to add criminalRecord
+  const eCriminalRecord = await client.encrypt(2, EncryptionTypes.uint8);
+  response0 = await contractInstance
+    .connect(admin)
+    .addCriminalRecord(clientAcc.getAddress(), eCriminalRecord);
+  console.log("Added Criminal Record data");
+
+  // admin to add Fertility Count
+  const eFertilityCount = await client.encrypt(98, EncryptionTypes.uint8);
+  response0 = await contractInstance
+    .connect(admin)
+    .addFertilityCount(clientAcc.getAddress(), eFertilityCount);
+  console.log("Added Fertility data");
+
+  // admin to add Marriage Status
+  const eMarriageStatus = await client.encrypt(2, EncryptionTypes.uint8);
+  response0 = await contractInstance
+    .connect(admin)
+    .addMarriageStatus(clientAcc.getAddress(), eMarriageStatus);
+  console.log("Added Marriage Status data");
+
+  // admin to add Rating
+  const eRating = await client.encrypt(100, EncryptionTypes.uint8);
+  response0 = await contractInstance
+    .connect(admin)
+    .addRating(clientAcc.getAddress(), eRating);
+  console.log("Added User rating");
+
   // Let try to pull out the medical data from the sc
   // client has to grant permission first
   response0 = await contractInstance

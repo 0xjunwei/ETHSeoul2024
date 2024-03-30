@@ -143,14 +143,14 @@ describe("SoulBound", async function () {
   // Inserted 2 above, should get back 2
   describe("Reading Medical Data", async function () {
     it("Should succeed as Admin", async function () {
-      const permit = await getPermit(tester.address, ethers.provider);
+      const permit = await getPermit(soulContract.address, ethers.provider);
       client.storePermit(permit);
       const permission = client.extractPermitPermission(permit);
       response0 = await contractInstance.retrieveMedicalData(
         clientAcc.address,
         permission
       );
-      const plaintext = client.unseal(tester.address, response0);
+      const plaintext = client.unseal(soulContract.address, response0);
       assert.equal(response, 2, "The result should match 2 was inserted");
     });
   });
