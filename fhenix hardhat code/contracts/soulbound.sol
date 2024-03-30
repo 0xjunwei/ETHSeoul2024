@@ -236,6 +236,9 @@ contract SoulBound is ERC721, Permissioned, Ownable {
     function isAboveEighteen(address _userAddress) public view returns (bool) {
         // Getting the dob, i can decrypt it as results only show true/false and it deduct the dob from current timestamp
         // Does not break privacy to know if an individual is above the age of 18
+        // Checks if user has a token else no point checking age as there wont be a age!
+        uint256 balanceOfUser = balanceOf(_userAddress);
+        require(balanceOfUser == 1, "User has not minted a token!");
         uint256 _dateOfBirth = FHE.decrypt(
             _identitylist[_userAddress].dateOfBirth
         );
