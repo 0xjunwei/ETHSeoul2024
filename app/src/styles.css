@@ -18,6 +18,7 @@
   border-style: solid;
   margin-bottom: 0.5rem;
   margin-top: 1.5rem;
+  margin: auto;
 }
 
 .profile-inner-border {
@@ -60,6 +61,7 @@
 }
 
 .settings-container {
+  line-height: 1.5;
   text-align: left;
   width: 80%;
   margin: auto;
@@ -75,7 +77,7 @@
 }
 
 .badge-dark {
-  color:rgb(0, 0, 0)
+  color: rgb(0, 0, 0)
 }
 
 .section {
@@ -107,7 +109,7 @@
 @media (min-width: 768px) {
   .verify-button {
     position: absolute;
-    right: 5%;
+    right: 2%;
     top: 2rem;
-    }
+  }
 }
