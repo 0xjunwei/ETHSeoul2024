@@ -1,5 +1,5 @@
 Project is based on Track submission for ETHSeoul 2024 under FHENIX track
-Contract deployed: https://explorer.testnet.fhenix.zone/address/0x78643eC987ca46CD77C6c12A6110b2B21f20A087
+Contract deployed: https://explorer.testnet.fhenix.zone/address/0x75eb6d9Ad68fa65061b21AA812f574372DbCdAD8
 
 We are creating a Dating app that enables user to identify individuals with STD based on medical data that is encrypted using Fully Homomorphic Encryption (FHE) on chain.
 
