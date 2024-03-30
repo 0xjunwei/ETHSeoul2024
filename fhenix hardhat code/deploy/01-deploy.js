@@ -90,4 +90,23 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const plaintext = client.unseal(tester.address, response0);
   // Inserted 2 above, should get back 2
   console.log("plaintext return: " + plaintext.toString());
+
+  // Try to get user data as NON-approved indiv
+  // revoking access
+  /*response0 = await contractInstance
+    .connect(clientAcc)
+    .revokeViewingOfData(deployer);
+  const permit1 = await getPermit(tester.address, ethers.provider);
+  client.storePermit(permit1);
+  const permission1 = client.extractPermitPermission(permit1);
+  response0 = await contractInstance.retrieveMedicalData(
+    clientAcc.address,
+    permission1
+  );
+  const plaintext1 = client.unseal(tester.address, response0);
+  console.log("should not return: " + plaintext1.toString());*/
+
+  // Check if dob checker works
+  response0 = await contractInstance.isAboveEighteen(clientAcc.getAddress());
+  console.log("Is user above 18: " + response0.toString());
 };

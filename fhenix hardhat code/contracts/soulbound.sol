@@ -68,7 +68,7 @@ contract SoulBound is ERC721, Permissioned, Ownable {
     function addCriminalRecord(
         address _user,
         inEuint8 memory __criminalRecord
-    ) public onlyOwner {
+    ) public onlyAdmin {
         uint256 balanceOfUser = balanceOf(_user);
         require(balanceOfUser == 1, "User has not minted a token!");
         euint8 encryptedCriminalData = FHE.asEuint8(__criminalRecord);
@@ -78,7 +78,7 @@ contract SoulBound is ERC721, Permissioned, Ownable {
     function addFertilityCount(
         address _user,
         inEuint8 memory __fertilityCount
-    ) public onlyOwner {
+    ) public onlyAdmin {
         uint256 balanceOfUser = balanceOf(_user);
         require(balanceOfUser == 1, "User has not minted a token!");
         euint8 encryptedFertilityCount = FHE.asEuint8(__fertilityCount);
@@ -88,7 +88,7 @@ contract SoulBound is ERC721, Permissioned, Ownable {
     function addMarriageStatus(
         address _user,
         inEuint8 memory __marriageStatus
-    ) public onlyOwner {
+    ) public onlyAdmin {
         uint256 balanceOfUser = balanceOf(_user);
         require(balanceOfUser == 1, "User has not minted a token!");
         euint8 encryptedMarriageStatus = FHE.asEuint8(__marriageStatus);
@@ -98,7 +98,7 @@ contract SoulBound is ERC721, Permissioned, Ownable {
     function addRating(
         address _user,
         inEuint8 memory __rating
-    ) public onlyOwner {
+    ) public onlyAdmin {
         uint256 balanceOfUser = balanceOf(_user);
         require(balanceOfUser == 1, "User has not minted a token!");
         euint8 encryptedRating = FHE.asEuint8(__rating);
@@ -131,17 +131,17 @@ contract SoulBound is ERC721, Permissioned, Ownable {
     }
 
     function retrieveCriminalRecord(
-        address _patientData,
+        address _userData,
         Permission memory perm
     ) public view onlySender(perm) returns (bytes memory) {
         // add require to prevent data from being seen
         require(
-            _approvedViewers[_patientData][msg.sender] == true,
+            _approvedViewers[_userData][msg.sender] == true,
             "no permission granted to view data"
         );
         return
             FHE.sealoutput(
-                _identitylist[_patientData].criminalRecord,
+                _identitylist[_userData].criminalRecord,
                 perm.publicKey
             );
     }
@@ -163,32 +163,31 @@ contract SoulBound is ERC721, Permissioned, Ownable {
     }
 
     function retrieveMarriageStatus(
-        address _patientData,
+        address _userData,
         Permission memory perm
     ) public view onlySender(perm) returns (bytes memory) {
         // add require to prevent data from being seen
         require(
-            _approvedViewers[_patientData][msg.sender] == true,
+            _approvedViewers[_userData][msg.sender] == true,
             "no permission granted to view data"
         );
         return
             FHE.sealoutput(
-                _identitylist[_patientData].marriageStatus,
+                _identitylist[_userData].marriageStatus,
                 perm.publicKey
             );
     }
 
     function retrieveRating(
-        address _patientData,
+        address _userData,
         Permission memory perm
     ) public view onlySender(perm) returns (bytes memory) {
         // add require to prevent data from being seen
         require(
-            _approvedViewers[_patientData][msg.sender] == true,
+            _approvedViewers[_userData][msg.sender] == true,
             "no permission granted to view data"
         );
-        return
-            FHE.sealoutput(_identitylist[_patientData].rating, perm.publicKey);
+        return FHE.sealoutput(_identitylist[_userData].rating, perm.publicKey);
     }
 
     function retrieveLastKnownMedicalData(
@@ -205,6 +204,18 @@ contract SoulBound is ERC721, Permissioned, Ownable {
                 _identitylist[_patientData].lastExamineDate,
                 perm.publicKey
             );
+    }
+
+    // Additional function check if user is above 18 years old
+    function isAboveEighteen(address _userAddress) public view returns (bool) {
+        // Getting the dob, i can decrypt it as results only show true/false and it deduct the dob from current timestamp
+        // Does not break privacy to know if an individual is above the age of 18
+        uint256 _dateOfBirth = FHE.decrypt(
+            _identitylist[_userAddress].dateOfBirth
+        );
+        uint256 ageInSeconds = block.timestamp - _dateOfBirth;
+        uint256 eighteenYearsInSeconds = 568036800; // 18 * 365.25 * 24 * 60 * 60
+        return ageInSeconds >= eighteenYearsInSeconds;
     }
 
     // view functions
