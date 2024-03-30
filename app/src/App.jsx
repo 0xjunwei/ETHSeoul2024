@@ -31,7 +31,7 @@ const providerUrl = 'https://api.testnet.fhenix.zone:7747/';
 const provider2 = new ethers.providers.JsonRpcProvider(providerUrl);
 const walletConnected = wallet.connect(provider2);
 
-const client = new FhenixClient({ provider2 });
+
 
 const ABI = [
   {
@@ -1248,16 +1248,16 @@ function App() {
 
   const [modalOpen, setModalOpen] = useState('settings');
 
-  const contractAddress = '0x75eb6d9Ad68fa65061b21AA812f574372DbCdAD8'; // Address of the deployed contract
+  const contractAddress = ''; // Address of the deployed contract
 
   async function approveViewingOfData() {
     try {
       // await window.ethereum.request({ method: 'eth_requestAccounts' });
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const contract = new ethers.Contract(contractAddress, ABI, provider.getSigner());
-
+      const storedAccount = localStorage.getItem("selectedAccount");
       // Call the method
-      const tx = await contract.approveViewingOfData(walletAddress);
+      const tx = await contract.approveViewingOfData(storedAccount);
       await tx.wait(); // Wait for the transaction to be mined
       console.log('Transaction successful:', tx.hash);
     } catch (error) {
@@ -1267,13 +1267,14 @@ function App() {
 
   async function verifyMarriage() {
     try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const client = new FhenixClient({ provider });
       const storedAccount = localStorage.getItem("selectedAccount");
       // await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const contract = new ethers.Contract(contractAddress, ABI, walletConnected);
-      console.log('storedAccouunt', storedAccount);
-      console.log('walletConnected', walletConnected);
+      const contract = new ethers.Contract(contractAddress, ABI, provider.getSigner());
+
       // Call the method
-      const permit = await getPermit(contractAddress, provider2);
+      const permit = await getPermit(contractAddress, provider);
       client.storePermit(permit);
       const permission = client.extractPermitPermission(permit);
       let response0 = await contract.retrieveMedicalData(
@@ -1401,12 +1402,12 @@ function App() {
                 {displayStates.displayF && <PregnantWomanIcon fontSize="large" className="badge-light" />}
 
               </div>
-              {modalOpen=='i' &&
-              <div className="settings-container">
-                <h3>Verify Your Identity</h3>
+              {modalOpen == 'i' &&
+                <div className="settings-container">
+                  <h3>Verify Your Identity</h3>
                   <Button onClick={() => approveViewingOfData()}>Grant Access</Button>
                   <Button onClick={handleCloseModal}>Close</Button>
-              </div>}
+                </div>}
               {modalOpen == 'm' &&
                 <div className="settings-container">
                   <h3>Verify Your Marriage Status</h3>
@@ -1428,7 +1429,7 @@ function App() {
                   <h3>Verify Your Fertility Measure</h3>
                   <Button onClick={handleCloseModal}>Close</Button>
                 </div>}
-              {modalOpen=='settings' &&
+              {modalOpen == 'settings' &&
                 <div className="settings-container">
                   <h3>Verification Settings</h3>
                   <Divider />
