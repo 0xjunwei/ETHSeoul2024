@@ -18,7 +18,9 @@ describe("SoulBound", async function () {
     deployerAddress = deployer.deployer;
     await deployments.fixture(["all"]);
     soulContract = await ethers.deployContract("SoulBound", [], {});
+    soulContractAddress = await soulContract.getAddress();
   });
+
   // checks if mint works proper
   describe("mint to a address", async function () {
     it("Should be succeed at initial mint", async function () {
@@ -139,19 +141,27 @@ describe("SoulBound", async function () {
     });
   });
 
+  // granting deployer access to read
+  describe("Adding deployer as valid reader of data", async function () {
+    it("Should succeed", async function () {
+      const eRating = await client_fhenix.encrypt(2, EncryptionTypes.uint8);
+      await expect(soulContract.connect(client).approveViewingOfData(deployer));
+    });
+  });
+
   // Trying to read the data out and validating
   // Inserted 2 above, should get back 2
   describe("Reading Medical Data", async function () {
     it("Should succeed as Admin", async function () {
-      const permit = await getPermit(soulContract.address, ethers.provider);
-      client.storePermit(permit);
-      const permission = client.extractPermitPermission(permit);
-      response0 = await contractInstance.retrieveMedicalData(
-        clientAcc.address,
+      const permit = await getPermit(soulContractAddress, ethers.provider);
+      client_fhenix.storePermit(permit);
+      const permission = client_fhenix.extractPermitPermission(permit);
+      response0 = await soulContract.retrieveMedicalData(
+        client.getAddress(),
         permission
       );
-      const plaintext = client.unseal(soulContract.address, response0);
-      assert.equal(response, 2, "The result should match 2 was inserted");
+      const plaintext = client_fhenix.unseal(soulContractAddress, response0);
+      assert.equal(plaintext, 2, "The result should match 2 was inserted");
     });
   });
 });

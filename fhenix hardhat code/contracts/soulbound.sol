@@ -25,12 +25,14 @@ contract SoulBound is ERC721, Permissioned, Ownable {
     }
     euint32 internal _zero32 = FHE.asEuint32(0);
     euint8 internal _zero8 = FHE.asEuint8(0);
-    uint256 tokenIDCount = 0;
+    // Because im initializing _addressToTokenID i dont want any token to be 0 as that would init all checks to the first token[0]
+    uint256 tokenIDCount = 1;
     mapping(address => IdentityDetails) public _identitylist;
     // Docters must be approved before they can add patient medical data into the patients record
     mapping(address => bool) internal _admin;
+    mapping(address => uint256) internal _addressToTokenID;
     // Similar to nft approval, even if nft is burnt and reminted the current approval will stick, please revoke after
-    mapping(address => mapping(address dappAddress => bool))
+    mapping(address => mapping(address dappAddress => uint256))
         internal _approvedViewers;
 
     constructor() ERC721("PersonalIdentity", "PII") Ownable(msg.sender) {}
@@ -118,9 +120,10 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         address _patientData,
         Permission memory perm
     ) public view onlySender(perm) returns (bytes memory) {
+        uint256 addressCurrentTokenID = viewAddressToTokenID(_patientData);
         // add require to prevent data from being seen
         require(
-            _approvedViewers[_patientData][msg.sender] == true,
+            _approvedViewers[_patientData][msg.sender] == addressCurrentTokenID,
             "no permission granted to view data"
         );
         return
@@ -134,9 +137,10 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         address _userData,
         Permission memory perm
     ) public view onlySender(perm) returns (bytes memory) {
+        uint256 addressCurrentTokenID = viewAddressToTokenID(_userData);
         // add require to prevent data from being seen
         require(
-            _approvedViewers[_userData][msg.sender] == true,
+            _approvedViewers[_userData][msg.sender] == addressCurrentTokenID,
             "no permission granted to view data"
         );
         return
@@ -150,9 +154,10 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         address _patientData,
         Permission memory perm
     ) public view onlySender(perm) returns (bytes memory) {
+        uint256 addressCurrentTokenID = viewAddressToTokenID(_patientData);
         // add require to prevent data from being seen
         require(
-            _approvedViewers[_patientData][msg.sender] == true,
+            _approvedViewers[_patientData][msg.sender] == addressCurrentTokenID,
             "no permission granted to view data"
         );
         return
@@ -166,9 +171,10 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         address _userData,
         Permission memory perm
     ) public view onlySender(perm) returns (bytes memory) {
+        uint256 addressCurrentTokenID = viewAddressToTokenID(_userData);
         // add require to prevent data from being seen
         require(
-            _approvedViewers[_userData][msg.sender] == true,
+            _approvedViewers[_userData][msg.sender] == addressCurrentTokenID,
             "no permission granted to view data"
         );
         return
@@ -182,9 +188,10 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         address _userData,
         Permission memory perm
     ) public view onlySender(perm) returns (bytes memory) {
+        uint256 addressCurrentTokenID = viewAddressToTokenID(_userData);
         // add require to prevent data from being seen
         require(
-            _approvedViewers[_userData][msg.sender] == true,
+            _approvedViewers[_userData][msg.sender] == addressCurrentTokenID,
             "no permission granted to view data"
         );
         return FHE.sealoutput(_identitylist[_userData].rating, perm.publicKey);
@@ -194,9 +201,10 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         address _patientData,
         Permission memory perm
     ) public view onlySender(perm) returns (bytes memory) {
+        uint256 addressCurrentTokenID = viewAddressToTokenID(_patientData);
         // add require to prevent data from being seen
         require(
-            _approvedViewers[_patientData][msg.sender] == true,
+            _approvedViewers[_patientData][msg.sender] == addressCurrentTokenID,
             "no permission granted to view data"
         );
         return
@@ -220,17 +228,19 @@ contract SoulBound is ERC721, Permissioned, Ownable {
 
     // view functions
     function approveViewingOfData(address _dappAddress) public {
+        uint256 addressCurrentTokenID = viewAddressToTokenID(msg.sender);
         // user must have a token first
         uint256 balanceOfUser = balanceOf(msg.sender);
         require(balanceOfUser == 1, "User has not minted a token!");
-        _approvedViewers[msg.sender][_dappAddress] = true;
+        _approvedViewers[msg.sender][_dappAddress] = addressCurrentTokenID;
     }
 
     function revokeViewingOfData(address _dappAddress) public {
+        uint256 addressCurrentTokenID = viewAddressToTokenID(msg.sender);
         // user must have a token first
         uint256 balanceOfUser = balanceOf(msg.sender);
         require(balanceOfUser == 1, "User has not minted a token!");
-        _approvedViewers[msg.sender][_dappAddress] = false;
+        _approvedViewers[msg.sender][_dappAddress] = addressCurrentTokenID;
     }
 
     // Custom mint function only callable by the owner
@@ -243,6 +253,7 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         );
 
         _safeMint(to, tokenIDCount);
+        _addressToTokenID[to] = tokenIDCount;
         tokenIDCount += 1;
         // initialize the structs
         _identitylist[to].dateOfBirth = _zero32;
@@ -264,7 +275,14 @@ contract SoulBound is ERC721, Permissioned, Ownable {
         _burn(tokenId);
         // Then, remove the entry from _identitylist
         delete _identitylist[ownerAddress];
-        // Similar to nft approval, even if nft is burnt and reminted the current approval for dapp will stick, please revoke before reminting
+        // Deleting the following will revoke all dapp approval
+        delete _addressToTokenID[ownerAddress];
+    }
+
+    function viewAddressToTokenID(
+        address _addressToCheck
+    ) public view returns (uint256) {
+        return _addressToTokenID[_addressToCheck];
     }
 
     // Override transfer functions to prevent all transfers
