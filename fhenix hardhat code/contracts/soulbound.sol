@@ -116,6 +116,24 @@ contract SoulBound is ERC721, Permissioned, Ownable {
     }
 
     // retrieve medical data for Dapps
+    function retrieveDateOfBirth(
+        address _patientData,
+        Permission memory perm
+    ) public view onlySender(perm) returns (bytes memory) {
+        uint256 addressCurrentTokenID = viewAddressToTokenID(_patientData);
+        // add require to prevent data from being seen
+        require(
+            _approvedViewers[_patientData][msg.sender] == addressCurrentTokenID,
+            "no permission granted to view data"
+        );
+        return
+            FHE.sealoutput(
+                _identitylist[_patientData].dateOfBirth,
+                perm.publicKey
+            );
+    }
+
+    // retrieve medical data for Dapps
     function retrieveMedicalData(
         address _patientData,
         Permission memory perm
