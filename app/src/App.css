@@ -12,6 +12,13 @@ html,
   height: 100%;
 }
 
+h1 h2,
+h3,
+h4,
+p {
+  color: #213547 !important;
+}
+
 .quicksand-400 {
   font-family: "Quicksand", sans-serif;
   font-optical-sizing: auto;
