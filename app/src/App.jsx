@@ -94,7 +94,7 @@ function App() {
 
   const [modalOpen, setModalOpen] = useState('settings');
 
-  const contractAddress = '0x0cC63D06fB5882e8dE85FA259010414d0461B6f4'; // Address of the deployed contract
+  const contractAddress = '0xc7603D73A56F5bb4849cAA963032d8f350616C45'; // Address of the deployed contract
 
   useEffect(() => {
     const storedAccount = localStorage.getItem("selectedAccount");
