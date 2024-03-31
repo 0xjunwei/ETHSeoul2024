@@ -5,8 +5,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@fhenixprotocol/contracts/FHE.sol";
 import "@fhenixprotocol/contracts/access/Permissioned.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-contract SoulBound is ERC721, Permissioned, Ownable {
+contract SoulBound is ERC721, Permissioned, Ownable, ERC721Burnable {
     struct IdentityDetails {
         euint32 dateOfBirth;
         // To save on storage cost (255 possible combinations)
@@ -288,12 +289,13 @@ contract SoulBound is ERC721, Permissioned, Ownable {
     }
 
     // Modified burn function
-    function burn(uint256 tokenId) public onlyOwner {
+    function burn(uint256 tokenId) public override onlyOwner {
         // Use the ownerOf function to get the address associated with this tokenId
         address ownerAddress = ownerOf(tokenId);
 
-        // burn the token
-        _burn(tokenId);
+        // Setting an "auth" arguments enables the `_isAuthorized` check which verifies that the token exists
+        // (from != 0). Therefore, it is not needed to verify that the return value is not 0 here.
+        _update(address(0), tokenId, address(0));
         // Then, remove the entry from _identitylist
         delete _identitylist[ownerAddress];
         // Deleting the following will revoke all dapp approval
