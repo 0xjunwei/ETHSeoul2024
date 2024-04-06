@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { FhenixClient, EncryptionTypes, getPermit } from "fhenixjs";
-import './App.css'
-import './styles.css';
+import { theme } from './utils/theme.js';
+import ABI from './abi.js';
+import SwipeCard from './components/common/SwipeCard.jsx';
+import CustomAppBar from './components/common/AppBar.jsx';
 import logo from '../public/logo.png'
 import profilePhoto from './assets/profilePhoto.png'
-import swipePhoto from './assets/swipePhoto.png'
-import AppBar from '@mui/material/AppBar';
+import swipePhoto1 from './assets/swipePhoto1.jpg';
+import './styles/App.css';
+import './styles/styles.css';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import Switch from '@mui/material/Switch';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import GavelIcon from '@mui/icons-material/Gavel';
@@ -27,7 +28,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/FavoriteBorder';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import ABI from './abi.js';
 
 const walletAddress = '0xAe9952347606576BAfa7ED44434312df0F519Ea7';
 const privateKeyDatingApp = '74a0f218c62ba96d19284ba2b4ba08f3aa763c32f707e7fbf57087b66a952d13';
@@ -37,45 +37,7 @@ const providerUrl = 'https://api.testnet.fhenix.zone:7747/';
 const provider2 = new ethers.providers.JsonRpcProvider(providerUrl);
 const walletConnected = wallet.connect(provider2);
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      light: '#FDEDDD',
-      main: '#190478',
-      dark: '#190478',
-      contrastText: '#fff',
-    },
-    secondary: {
-      // light: '#ff7961',
-      main: '#fff',
-      // dark: '#ba000d',
-      // contrastText: '#000',
-    },
-  },
-  typography: {
-    fontFamily: [
-      'Quicksand', // Use Quicksand font for this style
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
-  },
-});
-
 function App() {
-  if (window.ethereum) {
-    console.log('ethereum working')
-    // Your code to interact with Ethereum
-  } else {
-    console.error('MetaMask (window.ethereum) is not available');
-  }
   const [connected, setConnected] = useState(false);
   const [verifiedI, setVerifiedI] = useState(null);
   const [verifiedM, setVerifiedM] = useState(null);
@@ -183,13 +145,11 @@ function App() {
 
   async function onGrantAccessI() {
     try {
-      // await window.ethereum.request({ method: 'eth_requestAccounts' });
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const contract = new ethers.Contract(contractAddress, ABI, provider.getSigner());
       const storedAccount = localStorage.getItem("selectedAccount");
-      // Call the method
       const tx = await contract.approveViewingOfData(storedAccount);
-      await tx.wait(); // Wait for the transaction to be mined
+      await tx.wait();
       console.log('Transaction successful:', tx.hash);
       localStorage.setItem("retrieveIdentity", tx.hash.toString());
       setModalOpen('settings');
@@ -203,10 +163,7 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const client = new FhenixClient({ provider });
       const storedAccount = localStorage.getItem("selectedAccount");
-      // await window.ethereum.request({ method: 'eth_requestAccounts' });
       const contract = new ethers.Contract(contractAddress, ABI, provider.getSigner());
-
-      // Call the method
       const permit = await getPermit(contractAddress, provider);
       client.storePermit(permit);
       const permission = client.extractPermitPermission(permit);
@@ -233,10 +190,7 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const client = new FhenixClient({ provider });
       const storedAccount = localStorage.getItem("selectedAccount");
-      // await window.ethereum.request({ method: 'eth_requestAccounts' });
       const contract = new ethers.Contract(contractAddress, ABI, provider.getSigner());
-
-      // Call the method
       const permit = await getPermit(contractAddress, provider);
       client.storePermit(permit);
       const permission = client.extractPermitPermission(permit);
@@ -263,10 +217,7 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const client = new FhenixClient({ provider });
       const storedAccount = localStorage.getItem("selectedAccount");
-      // await window.ethereum.request({ method: 'eth_requestAccounts' });
       const contract = new ethers.Contract(contractAddress, ABI, provider.getSigner());
-
-      // Call the method
       const permit = await getPermit(contractAddress, provider);
       client.storePermit(permit);
       const permission = client.extractPermitPermission(permit);
@@ -367,41 +318,16 @@ function App() {
     <div className="body quicksand-400">
       <ThemeProvider theme={theme}>
         <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="static">
-            <Toolbar className="top-navigation">
-              <Button onClick={() => setModalOpen('swipe')}><FavoriteBorderIcon fontSize="medium" color="primary" sx={{ mr: 0.5 }} />Swipe</Button>
-              <Button onClick={() => setModalOpen('settings')}><VerifiedUserIcon fontSize="medium" color="primary" sx={{ mr: 0.5 }} />My Verifications</Button>
-              <Typography variant="h6" component="div" color="primary" sx={{ flexGrow: 1, mr: 18 }}>
-                STinDer
-              </Typography>
-              <Button color="primary" onClick={connect}>
-                {connected ? "Connected" : "Connect Wallet"}
-              </Button>
-            </Toolbar>
-          </AppBar>
+          <CustomAppBar
+            connected={connected}
+            onSwipeClick={() => setModalOpen('swipe')}
+            onVerificationsClick={() => setModalOpen('settings')}
+            onConnectClick={connect}
+          />
           <>
             <div className="flex-container">
               {modalOpen == 'swipe' &&
-                <div className="swipe-outer-container">
-                  <div className="swipe-container">
-                    <img src={swipePhoto} className="swipe-img" alt="Your Image" />
-                    <div className="flex items-center">
-                      <h1 className="username2">Jamie</h1>
-                      <div>
-                        <VerifiedIcon fontSize="medium" className="badge-dark" sx={{ mr: 1 }} /><span className="swipe-text">Identity verified</span>
-                      </div>
-                      <div>
-                        <Diversity3Icon fontSize="medium" className="badge-dark" sx={{ mr: 1 }} /><span className="swipe-text">Marriage status: single</span>
-                      </div>
-                      <div>
-                        <GavelIcon fontSize="medium" className="badge-dark" sx={{ mr: 1 }} /><span className="swipe-text">0 criminal records</span>
-                      </div>
-                      <p className="swipe-text2">
-                        Hobbies: solo traveling, photography, coding.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <SwipeCard name="Jamie" photo={swipePhoto1} />
               }
               {modalOpen !== 'swipe' && <div>
                 <div className="profile-container">
