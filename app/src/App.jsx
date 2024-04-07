@@ -8,7 +8,6 @@ import CustomAppBar from './components/common/AppBar.jsx';
 import logo from '../public/logo.png'
 import profilePhoto from './assets/profilePhoto.png'
 import swipePhoto1 from './assets/swipePhoto1.jpg';
-import './styles/App.css';
 import './styles/styles.css';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -57,6 +56,21 @@ function App() {
   const [modalOpen, setModalOpen] = useState('settings');
 
   const contractAddress = '0xc7603D73A56F5bb4849cAA963032d8f350616C45'; // Address of the deployed contract
+
+  const verificationDetails = {
+    marriageStatus: {
+      methodName: 'retrieveMarriageStatus',
+      localStorageKey: 'retrieveMarriageStatus',
+    },
+    criminalRecord: {
+      methodName: 'retrieveCriminalRecord',
+      localStorageKey: 'retrieveCriminalRecord',
+    },
+    medicalData: {
+      methodName: 'retrieveMedicalData',
+      localStorageKey: 'retrieveMedicalData',
+    },
+  };
 
   useEffect(() => {
     const storedAccount = localStorage.getItem("selectedAccount");
@@ -142,8 +156,7 @@ function App() {
     }
   }, [modalOpen]);
 
-
-  async function onGrantAccessI() {
+  async function onVerifyIdentity() {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const contract = new ethers.Contract(contractAddress, ABI, provider.getSigner());
@@ -158,8 +171,10 @@ function App() {
     }
   }
 
-  async function onGrantAccessM() {
+  async function onGrantAccess(verificationType) {
     try {
+      const { methodName, localStorageKey } = verificationDetails[verificationType];
+
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const client = new FhenixClient({ provider });
       const storedAccount = localStorage.getItem("selectedAccount");
@@ -167,78 +182,22 @@ function App() {
       const permit = await getPermit(contractAddress, provider);
       client.storePermit(permit);
       const permission = client.extractPermitPermission(permit);
-      let response0 = await contract.retrieveMarriageStatus(
-        storedAccount,
-        permission
-      );
-      const plaintext = client.unseal(contractAddress, response0);
-      const timestamp = new Date().getTime(); // Get current timestamp
+
+      let response = await contract[methodName](storedAccount, permission);
+      const plaintext = client.unseal(contractAddress, response);
+      const timestamp = new Date().getTime();
       const dataWithTimestamp = {
         data: plaintext.toString(),
-        timestamp: timestamp
+        timestamp,
       };
-      localStorage.setItem("retrieveMarriageStatus", JSON.stringify(dataWithTimestamp));
-      console.log("plaintext return: " + plaintext.toString());
+
+      localStorage.setItem(localStorageKey, JSON.stringify(dataWithTimestamp));
+      console.log("Verification result:", plaintext.toString());
       setModalOpen('settings');
     } catch (error) {
       console.error('Error:', error);
     }
   }
-
-  async function onGrantAccessC() {
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const client = new FhenixClient({ provider });
-      const storedAccount = localStorage.getItem("selectedAccount");
-      const contract = new ethers.Contract(contractAddress, ABI, provider.getSigner());
-      const permit = await getPermit(contractAddress, provider);
-      client.storePermit(permit);
-      const permission = client.extractPermitPermission(permit);
-      let response0 = await contract.retrieveCriminalRecord(
-        storedAccount,
-        permission
-      );
-      const plaintext = client.unseal(contractAddress, response0);
-      const timestamp = new Date().getTime(); // Get current timestamp
-      const dataWithTimestamp = {
-        data: plaintext.toString(),
-        timestamp: timestamp
-      };
-      localStorage.setItem("retrieveCriminalRecord", JSON.stringify(dataWithTimestamp));
-      console.log("plaintext return: " + plaintext.toString());
-      setModalOpen('settings');
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-
-  async function onGrantAccessS() {
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const client = new FhenixClient({ provider });
-      const storedAccount = localStorage.getItem("selectedAccount");
-      const contract = new ethers.Contract(contractAddress, ABI, provider.getSigner());
-      const permit = await getPermit(contractAddress, provider);
-      client.storePermit(permit);
-      const permission = client.extractPermitPermission(permit);
-      let response0 = await contract.retrieveMedicalData(
-        storedAccount,
-        permission
-      );
-      const plaintext = client.unseal(contractAddress, response0);
-      const timestamp = new Date().getTime(); // Get current timestamp
-      const dataWithTimestamp = {
-        data: plaintext.toString(),
-        timestamp: timestamp
-      };
-      localStorage.setItem("retrieveMedicalData", JSON.stringify(dataWithTimestamp));
-      console.log("plaintext return: " + plaintext.toString());
-      setModalOpen('settings');
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-
 
   async function connect() {
     if (!connected) {
@@ -260,17 +219,17 @@ function App() {
       }
     } else {
       try {
-        // localStorage.removeItem("selectedAccount");
-        // setConnected(false);
-        // console.log('connected false', connected);
-        // await window.ethereum.request({
-        //   method: "wallet_requestPermissions",
-        //   params: [
-        //     {
-        //       eth_accounts: {}
-        //     }
-        //   ]
-        // });
+        localStorage.removeItem("selectedAccount");
+        setConnected(false);
+        console.log('connected false', connected);
+        await window.ethereum.request({
+          method: "wallet_requestPermissions",
+          params: [
+            {
+              eth_accounts: {}
+            }
+          ]
+        });
       } catch (error) {
         console.error("Error disconnecting:", error);
       }
@@ -347,49 +306,49 @@ function App() {
                   heading="Verify Your Identity"
                   text={defaultVerifyText}
                   text2=""
-                  onGrantAccess={onGrantAccessI}
+                  onGrantAccess={onVerifyIdentity}
                 />}
               {modalOpen == 'i' && verifiedI !== null &&
                 <VerifyModal
                   heading="Your Identity Has Been Verified."
                   text="Result: Success"
                   text2=""
-                  onGrantAccess={onGrantAccessI}
+                  onGrantAccess={onVerifyIdentity}
                 />}
               {modalOpen == 'm' && verifiedM == null &&
                 <VerifyModal
                   heading="Verify Your Marriage Status"
                   text={defaultVerifyText}
                   text2=""
-                  onGrantAccess={onGrantAccessM}
+                  onGrantAccess={() => onGrantAccess('marriageStatus')}
                 />}
               {modalOpen == 'm' && verifiedM !== null &&
                 <VerifyModal
                   heading="Your Marriage Status Has Been Verified."
                   text={verifiedMTime}
                   text2={verifiedM}
-                  onGrantAccess={onGrantAccessI}
+                  onGrantAccess={() => onGrantAccess('marriageStatus')}
                 />}
               {modalOpen == 'c' && verifiedC == null &&
                 <VerifyModal
                   heading="Verify Your Criminal Records"
                   text={defaultVerifyText}
                   text2=""
-                  onGrantAccess={onGrantAccessC}
+                  onGrantAccess={() => onGrantAccess('criminalRecord')}
                 />}
               {modalOpen == 'c' && verifiedC !== null &&
                 <VerifyModal
                   heading="Your Marriage Status Has Been Verified."
                   text={verifiedCTime}
                   text2={verifiedC}
-                  onGrantAccess={onGrantAccessC}
+                  onGrantAccess={() => onGrantAccess('medicalData')}
                 />}
               {modalOpen == 's' && verifiedS == null &&
                 <VerifyModal
                   heading="Verify Your STD Status"
                   text={defaultVerifyText}
                   text2=""
-                  onGrantAccess={onGrantAccessS}
+                  onGrantAccess={() => onGrantAccess('medicalData')}
                 />}
               {modalOpen == 's' && verifiedS !== null &&
                 <VerifyModal

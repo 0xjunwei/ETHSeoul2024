@@ -10,18 +10,18 @@ const CustomAppBar = ({ connected, onConnectClick, onSwipeClick, onVerifications
   return (
     <AppBar position="static">
       <Toolbar className="top-navigation">
-        <Button onClick={onSwipeClick}>
+        <Button className="swipe-button" onClick={onSwipeClick}>
           <FavoriteBorderIcon fontSize="medium" color="primary" sx={{ mr: 0.5 }} />
           Swipe
         </Button>
-        <Button onClick={onVerificationsClick}>
+        <Button className="settings-button" onClick={onVerificationsClick}>
           <VerifiedUserIcon fontSize="medium" color="primary" sx={{ mr: 0.5 }} />
           My Verifications
         </Button>
-        <Typography variant="h6" component="div" color="primary" sx={{ flexGrow: 1, mr: 18 }}>
+        <Typography className="app-title" variant="h6" component="div" color="primary" sx={{ flexGrow: 1, mr: 18 }}>
           STinDer
         </Typography>
-        <Button color="primary" onClick={onConnectClick}>
+        <Button className="connect-button" color="primary" onClick={onConnectClick}>
           {connected ? "Connected" : "Connect Wallet"}
         </Button>
       </Toolbar>
