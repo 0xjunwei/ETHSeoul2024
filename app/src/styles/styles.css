@@ -251,7 +251,7 @@ color: #213547 !important;
 
   .flex-container {
     padding: 0.5rem;
-    padding-top: 3.5rem;
+    padding-top: 25%;
     margin: 0;
   }
 
@@ -324,7 +324,7 @@ color: #213547 !important;
   }
 
   .swipe-img {
-    height: 19rem;
+    height: 35%;
     border-radius: 10px;
     margin-top: 2rem;
   }
