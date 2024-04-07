@@ -250,8 +250,9 @@ color: #213547 !important;
   }
 
   .flex-container {
+    display: block;
     padding: 0.5rem;
-    padding-top: 25%;
+    padding-top: 5%;
     margin: 0;
   }
 
@@ -289,7 +290,7 @@ color: #213547 !important;
   }
 
   .settings-container {
-    min-width: 340px;
+    min-width: 320px;
   }
 
   .profile-container {
